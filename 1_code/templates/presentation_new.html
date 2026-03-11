@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create Presentation Page</h1>
+<p><a class="back" href="{{ url_for('project_detail', project_id=project.id) }}">← Back to Workspace</a></p>
+<p><b>Project:</b> <a href="{{ url_for('project_detail', project_id=project.id) }}">{{ project.title }}</a></p>
+
+<form method="POST">
+  <div style="margin-top:12px;">
+    <label>Presentation Title (required)</label><br/>
+    <input name="title" placeholder="e.g., Client Preview - Mix Revisions" required />
+  </div>
+
+  <hr/>
+
+  <h2>Select Assets + Versions</h2>
+  {% if assets %}
+    {% for a in assets %}
+      <div style="border:1px solid #111; padding:12px; margin:12px 0;">
+        <b>{{ a.title }}</b> <span style="color:#444;">({{ a.asset_type }})</span><br/>
+        <label style="font-weight:normal;">Choose version to include:</label><br/>
+        <select name="version_for_asset_{{ a.id }}">
+          <option value="">-- Do not include --</option>
+          {% for v in versions_by_asset[a.id] %}
+            <option value="{{ v.id }}">
+              v{{ v.version_number }} {% if a.current_version_id == v.id %}(Current){% endif %}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No assets available yet. Upload assets first.</p>
+  {% endif %}
+
+  <div style="margin-top:12px; display:flex; gap:10px;">
+    <button class="btn" type="submit">Publish</button>
+    <a class="btn" href="{{ url_for('project_detail', project_id=project.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ page.title }}</h1>
+<p><a class="back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a></p>
+<p><b>Share link:</b> <code>{{ request.url }}</code></p>
+
+{% if items %}
+  {% for asset, version in items %}
+    <hr/>
+    <h2>{{ asset.title }} (v{{ version.version_number }})</h2>
+    <p><b>Type:</b> {{ asset.asset_type }} | <b>Status:</b> {{ version.status }}</p>
+    <p><b>Notes:</b> {{ version.notes or "-" }}</p>
+
+    {% if asset.asset_type == "image" %}
+      <img src="{{ url_for('media', filename=version.stored_filename) }}"
+           alt="preview"
+           style="max-width:100%;height:auto;border:1px solid #111;padding:6px;" />
+    {% elif asset.asset_type == "audio" %}
+      <audio controls style="width:100%;">
+        <source src="{{ url_for('media', filename=version.stored_filename) }}" type="{{ version.mime_type }}">
+      </audio>
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <p>No items were added to this presentation.</p>
+{% endif %}
+{% endblock %}

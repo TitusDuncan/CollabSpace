@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="top" style="margin-top:10px;">
+    <div>
+      <h1 style="margin-bottom:6px;">{{ project.title }}</h1>
+      <div style="font-size:13px;color:#444;">{{ project.description or "No description" }}</div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a class="btn" href="{{ url_for('asset_new', project_id=project.id) }}">Upload Asset</a>
+      <a class="btn" href="{{ url_for('presentation_new', project_id=project.id) }}">New Presentation Page</a>
+    </div>
+  </div>
+
+  <hr/>
+
+  <h2>Assets</h2>
+  {% if assets %}
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%;">
+      <tr>
+        <th>Name</th><th>Type</th><th>Current Version</th><th>Last Updated</th>
+      </tr>
+      {% for a in assets %}
+      <tr>
+        <td><a href="{{ url_for('asset_detail', asset_id=a.id) }}"><b>{{ a.title }}</b></a></td>
+        <td>{{ a.asset_type }}</td>
+        <td>{% if a.current_version_id %}v{{ current_versions[a.id] }}{% else %}-{% endif %}</td>
+        <td>{{ a.created_at.strftime("%Y-%m-%d") }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    <p>No assets yet. Click <b>Upload Asset</b> to add your first file.</p>
+  {% endif %}
+
+  <hr/>
+
+  <h2>Presentation Pages</h2>
+  {% if presentations %}
+    <ul>
+      {% for p in presentations %}
+        <li>
+          <b>{{ p.title }}</b> —
+          <a href="{{ url_for('presentation_view', share_token=p.share_token) }}">Open</a>
+          <span style="color:#444;font-size:13px;">(share token: {{ p.share_token }})</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No presentation pages yet. Click <b>New Presentation Page</b> to create one.</p>
+  {% endif %}
+{% endblock %}

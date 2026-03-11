@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Upload Asset</h1>
+<p><b>Project:</b> <a href="{{ url_for('project_detail', project_id=project.id) }}">{{ project.title }}</a></p>
+
+<form method="POST" enctype="multipart/form-data">
+  <div style="margin-top:12px;">
+    <label>Asset Title (required)</label><br/>
+    <input name="title" placeholder="e.g., Vocal Mix" required />
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>File (image or audio)</label><br/>
+    <input type="file" name="file" required />
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>Tags (optional)</label><br/>
+    <input name="tags" placeholder="mix, v1, client" />
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>Notes (optional)</label><br/>
+    <textarea name="notes" rows="4" placeholder="Short notes..."></textarea>
+  </div>
+
+  <div style="margin-top:12px; display:flex; gap:10px;">
+    <button class="btn" type="submit">Upload</button>
+    <a class="btn" href="{{ url_for('project_detail', project_id=project.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

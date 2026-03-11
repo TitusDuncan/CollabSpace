@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create Project</h1>
+<p><a class="back" href="{{ url_for('dashboard') }}">← Back</a></p>
+
+<form method="POST">
+  <div style="margin-top:12px;">
+    <label>Title (required)</label><br/>
+    <input name="title" placeholder="e.g., Client Mixes" required />
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>Description (optional)</label><br/>
+    <textarea name="description" rows="4" placeholder="Short description..."></textarea>
+  </div>
+
+  <div style="margin-top:12px; display:flex; gap:10px;">
+    <button class="btn" type="submit">Create</button>
+    <a class="btn" href="{{ url_for('dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

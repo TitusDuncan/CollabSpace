@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ asset.title }}</h1>
+
+<p><b>Project:</b> {{ project.title }}</p>
+<p><a class="back" href="{{ url_for('project_detail', project_id=asset.project_id) }}">← Back to Workspace</a></p>
+
+<p><b>Type:</b> {{ asset.asset_type }} | <b>Tags:</b> {{ asset.tags or "-" }}</p>
+<p><b>Notes:</b> {{ asset.notes or "-" }}</p>
+
+<hr/>
+
+<h2>Current Version</h2>
+{% if current %}
+  {% if asset.asset_type == "image" %}
+    <img src="{{ url_for('media', filename=current.stored_filename) }}"
+         alt="preview"
+         style="max-width:100%;height:auto;border:1px solid #111;padding:6px;" />
+  {% elif asset.asset_type == "audio" %}
+    <audio id="player" controls style="width:100%;">
+      <source src="{{ url_for('media', filename=current.stored_filename) }}" type="{{ current.mime_type }}">
+    </audio>
+    <div style="margin-top:8px;display:flex;gap:8px;">
+      <button type="button" onclick="seek(-10)">-10s</button>
+      <button type="button" onclick="seek(10)">+10s</button>
+    </div>
+    <script>
+      const player = document.getElementById("player");
+      function seek(s){ if(player) player.currentTime = Math.max(0, player.currentTime + s); }
+    </script>
+  {% endif %}
+  <p><b>Version:</b> v{{ current.version_number }} | <b>Status:</b> {{ current.status }}</p>
+  <p><b>Version Notes:</b> {{ current.notes or "-" }}</p>
+{% else %}
+  <p>No versions uploaded yet.</p>
+{% endif %}
+
+<hr/>
+
+<h2>Add Version</h2>
+<form method="POST" action="{{ url_for('version_new', asset_id=asset.id) }}" enctype="multipart/form-data">
+  <div style="margin-top:12px;">
+    <label>File (must match asset type)</label><br/>
+    <input type="file" name="file" required>
+  </div>
+
+  <div style="margin-top:12px;">
+    <label>Version Notes (optional)</label><br/>
+    <textarea name="notes" rows="3" placeholder="What changed in this version?"></textarea>
+  </div>
+
+  <div style="margin-top:12px;">
+    <label><input type="checkbox" name="set_current" checked> Set as current version</label>
+  </div>
+
+  <div style="margin-top:12px;">
+    <button class="btn" type="submit">Upload Version</button>
+  </div>
+</form>
+
+<hr/>
+
+<h2>Version History</h2>
+<table border="1" cellpadding="8" cellspacing="0" style="width:100%;">
+  <tr>
+    <th>Version</th>
+    <th>Status</th>
+    <th>Notes</th>
+    <th>Created</th>
+    <th>Actions</th>
+  </tr>
+
+  {% for v in versions %}
+  <tr>
+    <td>v{{ v.version_number }} {% if asset.current_version_id == v.id %}(Current){% endif %}</td>
+    <td>{{ v.status }}</td>
+    <td>{{ v.notes or "-" }}</td>
+    <td>{{ v.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+    <td>
+      <form method="POST" action="{{ url_for('set_current', asset_id=asset.id, version_id=v.id) }}">
+        <button class="btn" type="submit">Set Current</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

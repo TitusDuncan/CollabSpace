@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CollabSpace</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 24px auto; }
+    a { color: #111; }
+    .top { display:flex; align-items:center; justify-content:space-between; }
+    .flash { padding: 10px; border: 1px solid #111; margin: 10px 0; background: #f7f7f7; }
+    .btn { padding: 8px 12px; border: 1px solid #111; background: white; cursor:pointer; text-decoration:none; display:inline-block; }
+    input, textarea { padding: 8px; border: 1px solid #111; width: 100%; box-sizing: border-box; }
+    label { font-weight: bold; }
+    .back { border: 1px solid #111; padding: 6px 10px; text-decoration: none; display: inline-block; }
+  </style>
+</head>
+<body>
+  <!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>CollabSpace</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 24px auto; }
+    a { color: #111; }
+    .top { display:flex; align-items:center; justify-content:space-between; }
+    .flash { padding: 10px; border: 1px solid #111; margin: 10px 0; background: #f7f7f7; }
+    .btn { padding: 8px 12px; border: 1px solid #111; background: white; cursor:pointer; text-decoration:none; display:inline-block; }
+    input, textarea { padding: 8px; border: 1px solid #111; width: 100%; box-sizing: border-box; }
+    label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="top">
+    <h2><a href="/" style="text-decoration:none;">CollabSpace</a></h2>
+    <div style="font-size:14px;">Dedicated space for creatives</div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="flash"><b>{{ category }}</b>: {{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</body>
+</html>
