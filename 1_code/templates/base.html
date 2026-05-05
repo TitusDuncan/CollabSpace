@@ -6,34 +6,128 @@
   <style>
     body { font-family: Arial, sans-serif; max-width: 1000px; margin: 24px auto; }
     a { color: #111; }
-    .top { display:flex; align-items:center; justify-content:space-between; }
     .flash { padding: 10px; border: 1px solid #111; margin: 10px 0; background: #f7f7f7; }
-    .btn { padding: 8px 12px; border: 1px solid #111; background: white; cursor:pointer; text-decoration:none; display:inline-block; }
-    input, textarea { padding: 8px; border: 1px solid #111; width: 100%; box-sizing: border-box; }
+
+    .btn {
+      padding: 8px 12px;
+      border: 1px solid #111;
+      background: white;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-block;
+      font-size:14px;
+    }
+
+    input, textarea, select {
+      padding: 8px;
+      border: 1px solid #111;
+      width: 100%;
+      box-sizing: border-box;
+      font-size:14px;
+    }
+
     label { font-weight: bold; }
+    .muted { color:#444; font-size:13px; }
     .back { border: 1px solid #111; padding: 6px 10px; text-decoration: none; display: inline-block; }
+
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .brand {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    .brand h2 { margin:0; }
+    .crumbs { font-size:13px; color:#444; }
+
+    .right-controls {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .segment {
+      display:flex;
+      border:1px solid #111;
+      overflow:hidden;
+      height:34px;
+    }
+
+    .segment select {
+      width:auto;
+      border:none;
+      height:34px;
+      padding:0 10px;
+      outline:none;
+      appearance:auto;
+      background:white;
+    }
+
+    .pill {
+      padding: 8px 10px;
+      border: 1px solid #111;
+      font-size:13px;
+      background:#f7f7f7;
+      white-space:nowrap;
+    }
   </style>
 </head>
 <body>
-  <!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>CollabSpace</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 24px auto; }
-    a { color: #111; }
-    .top { display:flex; align-items:center; justify-content:space-between; }
-    .flash { padding: 10px; border: 1px solid #111; margin: 10px 0; background: #f7f7f7; }
-    .btn { padding: 8px 12px; border: 1px solid #111; background: white; cursor:pointer; text-decoration:none; display:inline-block; }
-    input, textarea { padding: 8px; border: 1px solid #111; width: 100%; box-sizing: border-box; }
-    label { font-weight: bold; }
-  </style>
-</head>
-<body>
-  <div class="top">
-    <h2><a href="/" style="text-decoration:none;">CollabSpace</a></h2>
-    <div style="font-size:14px;">Dedicated space for creatives</div>
+
+  <div class="topbar">
+    <div class="brand">
+      <h2>
+        <a href="{{ url_for('dashboard') }}" style="text-decoration:none;">CollabSpace</a>
+      </h2>
+
+      {% if project is defined and project %}
+        <div class="crumbs">
+          <a href="{{ url_for('dashboard') }}" style="text-decoration:none;">Dashboard</a>
+          &nbsp;›&nbsp;
+          <span><b>{{ project.title }}</b></span>
+        </div>
+      {% else %}
+        <div class="crumbs">Dedicated space for creatives</div>
+      {% endif %}
+    </div>
+
+    <div class="right-controls">
+      {% if project is defined and project %}
+        <div class="pill">View as</div>
+        <form method="POST" action="{{ url_for('set_role', project_id=project.id) }}" style="margin:0;">
+          <div class="segment">
+            <select name="role" onchange="this.form.submit()">
+              <option value="Creator" {% if role=='Creator' %}selected{% endif %}>Creator</option>
+              <option value="Collaborator" {% if role=='Collaborator' %}selected{% endif %}>Collaborator</option>
+              <option value="Client" {% if role=='Client' %}selected{% endif %}>Client</option>
+            </select>
+          </div>
+        </form>
+      {% else %}
+        <div class="pill">Default view</div>
+        <form method="POST" action="{{ url_for('set_global_role') }}" style="margin:0;">
+          <div class="segment">
+            <select name="role" onchange="this.form.submit()">
+              <option value="Creator" {% if global_role=='Creator' %}selected{% endif %}>Creator</option>
+              <option value="Collaborator" {% if global_role=='Collaborator' %}selected{% endif %}>Collaborator</option>
+              <option value="Client" {% if global_role=='Client' %}selected{% endif %}>Client</option>
+            </select>
+          </div>
+        </form>
+      {% endif %}
+
+      <a class="btn" href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a class="btn" href="{{ url_for('project_new') }}">New Project</a>
+    </div>
   </div>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,5 +139,6 @@
   {% endwith %}
 
   {% block content %}{% endblock %}
+
 </body>
 </html>

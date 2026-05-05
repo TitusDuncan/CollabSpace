@@ -1,23 +1,84 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="top" style="margin-top:10px;">
-    <div>
-      <h1 style="margin-bottom:6px;">{{ project.title }}</h1>
-      <div style="font-size:13px;color:#444;">{{ project.description or "No description" }}</div>
-    </div>
-    <div style="display:flex; gap:10px;">
-      <a class="btn" href="{{ url_for('asset_new', project_id=project.id) }}">Upload Asset</a>
+
+<h1 style="margin-bottom:6px;">{{ project.title }}</h1>
+<div class="muted" style="margin-bottom:10px;">{{ project.description or "No description" }}</div>
+
+{% if role == 'Creator' %}
+  <form method="POST" action="{{ url_for('toggle_collab_current', project_id=project.id) }}" style="margin: 10px 0;">
+  <div style="display:flex; align-items:center; gap:10px;">
+    <label for="allow_collab_current" style="font-weight:bold; margin:0;">
+      Allow Collaborators to Set Current Version
+    </label>
+
+    <input
+      id="allow_collab_current"
+      type="checkbox"
+      name="allow_collab_current"
+      {% if project.allow_collaborator_set_current %}checked{% endif %}
+      onchange="this.form.submit()"
+      style="margin:0; width:auto;"
+    />
+  </div>
+</form>
+{% endif %}
+
+<hr/>
+
+{% if role == 'Client' %}
+  <h2>Presentation Pages</h2>
+  <p class="muted">Client view: you can only open presentation pages using the link + PIN.</p>
+
+  {% if presentations %}
+    <ul>
+      {% for p in presentations %}
+        <li style="margin-bottom:8px;">
+          <b>{{ p.title }}</b> —
+          <a href="{{ url_for('presentation_view', share_token=p.share_token) }}">Open</a>
+          <span class="muted">(PIN protected)</span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No presentation pages yet.</p>
+  {% endif %}
+
+{% else %}
+  <!-- Creator / Collaborator workspace -->
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin:12px 0;">
+    <a class="btn" href="{{ url_for('asset_new', project_id=project.id) }}">Upload Asset</a>
+    {% if role == 'Creator' %}
       <a class="btn" href="{{ url_for('presentation_new', project_id=project.id) }}">New Presentation Page</a>
-    </div>
+    {% endif %}
   </div>
 
-  <hr/>
+  <!-- Search + Filter -->
+  <form method="GET" style="display:flex; gap:10px; align-items:end; margin:12px 0;">
+    <div style="flex:1;">
+      <label>Search</label>
+      <input name="q" value="{{ q or '' }}" placeholder="Search title, tags, notes" />
+    </div>
+
+    <div style="width:180px;">
+      <label>Type</label>
+      <select name="type">
+        <option value="">All</option>
+        <option value="image" {% if type_filter=='image' %}selected{% endif %}>Image</option>
+        <option value="audio" {% if type_filter=='audio' %}selected{% endif %}>Audio</option>
+      </select>
+    </div>
+
+    <button class="btn" type="submit">Filter</button>
+  </form>
 
   <h2>Assets</h2>
   {% if assets %}
     <table border="1" cellpadding="8" cellspacing="0" style="width:100%;">
       <tr>
-        <th>Name</th><th>Type</th><th>Current Version</th><th>Last Updated</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Current Version</th>
+        <th>Created</th>
       </tr>
       {% for a in assets %}
       <tr>
@@ -29,7 +90,7 @@
       {% endfor %}
     </table>
   {% else %}
-    <p>No assets yet. Click <b>Upload Asset</b> to add your first file.</p>
+    <p>No assets found. Adjust filters or upload an asset.</p>
   {% endif %}
 
   <hr/>
@@ -38,14 +99,17 @@
   {% if presentations %}
     <ul>
       {% for p in presentations %}
-        <li>
+        <li style="margin-bottom:6px;">
           <b>{{ p.title }}</b> —
           <a href="{{ url_for('presentation_view', share_token=p.share_token) }}">Open</a>
-          <span style="color:#444;font-size:13px;">(share token: {{ p.share_token }})</span>
+          <span class="muted">(token: {{ p.share_token }})</span>
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No presentation pages yet. Click <b>New Presentation Page</b> to create one.</p>
+    <p>No presentation pages yet.</p>
   {% endif %}
+
+{% endif %}
+
 {% endblock %}

@@ -1,8 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>{{ page.title }}</h1>
-<p><a class="back" href="{{ url_for('dashboard') }}">← Back to Dashboard</a></p>
-<p><b>Share link:</b> <code>{{ request.url }}</code></p>
+<p class="muted"><b>Project:</b> {{ project.title }}</p>
+
+{% if role == 'Creator' %}
+  <div style="border:1px solid #111; padding:12px; margin:12px 0;">
+    <h3 style="margin-top:0;">Presentation PIN (Creator Only)</h3>
+    <p class="muted">Current PIN: <b>{{ page.pin_code or "1234" }}</b></p>
+    <form method="POST" action="{{ url_for('update_presentation_pin', share_token=page.share_token) }}" style="max-width:320px;">
+      <label>Update PIN</label>
+      <input name="pin_code" placeholder="Enter new PIN" />
+      <div style="margin-top:10px;">
+        <button class="btn" type="submit">Update PIN</button>
+      </div>
+    </form>
+    <p class="muted" style="margin-top:10px;">
+      When you update the PIN, clients must use the new PIN immediately.
+    </p>
+  </div>
+{% endif %}
 
 {% if items %}
   {% for asset, version in items %}
@@ -20,6 +36,22 @@
         <source src="{{ url_for('media', filename=version.stored_filename) }}" type="{{ version.mime_type }}">
       </audio>
     {% endif %}
+
+    <div style="margin-top:14px; border:1px solid #111; padding:12px;">
+      <h3 style="margin-top:0;">Client Review</h3>
+      <form method="POST" action="{{ url_for('submit_review', share_token=page.share_token) }}">
+        <input type="hidden" name="version_id" value="{{ version.id }}">
+
+        <label>Note (optional)</label>
+        <textarea name="note" rows="2" placeholder="Short feedback..."></textarea>
+
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <button class="btn" type="submit" name="decision" value="APPROVED">Approve</button>
+          <button class="btn" type="submit" name="decision" value="CHANGES_REQUESTED">Request Changes</button>
+        </div>
+      </form>
+    </div>
+
   {% endfor %}
 {% else %}
   <p>No items were added to this presentation.</p>

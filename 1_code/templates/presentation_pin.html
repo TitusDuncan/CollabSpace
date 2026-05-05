@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ page.title }}</h1>
+<p class="muted">Client access requires a PIN.</p>
+
+{% if error %}
+  <div class="flash"><b>error</b>: {{ error }}</div>
+{% endif %}
+
+<form method="GET" style="max-width:320px;">
+  <label>PIN</label>
+  <input name="pin" placeholder="Enter PIN" required />
+  <div style="margin-top:10px;">
+    <button class="btn" type="submit">Unlock</button>
+  </div>
+</form>
+{% endblock %}

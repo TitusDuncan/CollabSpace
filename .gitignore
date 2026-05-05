@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+
+# Local DB + instance files
+1_code/instance/
+*.db
+
+# Uploads
+1_code/uploads/
+EOFcat > .gitignore << 'EOF'
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+.venv/
+
+# Local DB + instance files
+1_code/instance/
+*.db
+
+# Uploads
+1_code/uploads/

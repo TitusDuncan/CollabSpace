@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Upload Asset</h1>
+<p><a class="back" href="{{ url_for('project_detail', project_id=project.id) }}">← Back to Workspace</a></p>
 <p><b>Project:</b> <a href="{{ url_for('project_detail', project_id=project.id) }}">{{ project.title }}</a></p>
 
 <form method="POST" enctype="multipart/form-data">

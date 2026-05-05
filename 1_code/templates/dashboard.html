@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="top" style="margin-top:10px;">
-    <h1>Dashboard</h1>
-    <a class="btn" href="{{ url_for('project_new') }}">New Project</a>
-  </div>
 
-  {% if projects %}
-    <ul>
-      {% for p in projects %}
-        <li style="margin: 10px 0;">
-          <a href="{{ url_for('project_detail', project_id=p.id) }}"><b>{{ p.title }}</b></a>
-          <div style="font-size:13px;color:#444;">{{ p.description or "No description" }}</div>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No projects yet. Click <b>New Project</b> to get started.</p>
-  {% endif %}
+<h1>Dashboard</h1>
+<p class="muted">Select a project to enter your workspace.</p>
+
+{% if projects %}
+  <ul>
+    {% for p in projects %}
+      <li style="margin-bottom:10px;">
+        <a href="{{ url_for('project_open', project_id=p.id) }}">
+          <b>{{ p.title }}</b></a><br/>
+        <span class="muted">{{ p.description or "No description" }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No projects yet. Use <b>New Project</b> in the top menu.</p>
+{% endif %}
+
 {% endblock %}

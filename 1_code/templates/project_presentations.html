@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="margin-bottom:6px;">{{ project.title }}</h1>
+<p class="muted">Presentation pages for this project.</p>
+
+{% if role == 'Client' %}
+  <p class="muted">
+    Client view: Select a presentation, then enter the PIN to review and approve/request changes.
+  </p>
+{% endif %}
+
+<hr/>
+
+{% if presentations %}
+  <ul>
+    {% for p in presentations %}
+      <li style="margin-bottom:8px;">
+        <b>{{ p.title }}</b> —
+        <a href="{{ url_for('presentation_view', share_token=p.share_token) }}">Open</a>
+        <span class="muted">(PIN required)</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No presentation pages yet.</p>
+  {% if role == 'Creator' %}
+    <a class="btn" href="{{ url_for('presentation_new', project_id=project.id) }}">Create Presentation Page</a>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

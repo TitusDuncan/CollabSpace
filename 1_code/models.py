@@ -3,11 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    allow_collaborator_set_current = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     assets = db.relationship("Asset", backref="project", cascade="all, delete-orphan")
@@ -51,6 +53,18 @@ class Version(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+# IMPORTANT: define PresentationItem BEFORE PresentationPage
+class PresentationItem(db.Model):
+    __tablename__ = "presentation_items"
+    id = db.Column(db.Integer, primary_key=True)
+
+    presentation_page_id = db.Column(db.Integer, db.ForeignKey("presentation_pages.id"), nullable=False)
+    asset_id = db.Column(db.Integer, db.ForeignKey("assets.id"), nullable=False)
+    version_id = db.Column(db.Integer, db.ForeignKey("versions.id"), nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class PresentationPage(db.Model):
     __tablename__ = "presentation_pages"
     id = db.Column(db.Integer, primary_key=True)
@@ -58,14 +72,24 @@ class PresentationPage(db.Model):
 
     title = db.Column(db.String(160), nullable=False)
     share_token = db.Column(db.String(64), unique=True, nullable=False)
+    pin_code = db.Column(db.String(12), nullable=True)  # PIN required to view link
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    items = db.relationship("PresentationItem", backref="presentation", cascade="all, delete-orphan")
+    # relationship uses class object (no string lookup issues)
+    items = db.relationship(
+        PresentationItem,
+        backref="presentation",
+        cascade="all, delete-orphan"
+    )
 
 
-class PresentationItem(db.Model):
-    __tablename__ = "presentation_items"
+class Review(db.Model):
+    __tablename__ = "reviews"
     id = db.Column(db.Integer, primary_key=True)
+
     presentation_page_id = db.Column(db.Integer, db.ForeignKey("presentation_pages.id"), nullable=False)
-    asset_id = db.Column(db.Integer, db.ForeignKey("assets.id"), nullable=False)
     version_id = db.Column(db.Integer, db.ForeignKey("versions.id"), nullable=False)
+
+    decision = db.Column(db.String(30), nullable=False)  # APPROVED | CHANGES_REQUESTED
+    note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
